@@ -2,8 +2,9 @@
 
 ## Commands to run :
 
-## A. Demosaiking
- - we have provided output images in the same directory
+## A. Demosaicing
+ - we have provided output images in the same directory.
+ - we have also included image output of matlab functin demosaic().
  - go to q_a_demosaicing and execute:
 	```
 	python3 q1.py -i "../data/demosaicing"
@@ -46,15 +47,20 @@
 ## References
 
 <a id="1">[1]</a> 
+H. S. Malvar, L.-w. He, and R. Cutler, “High-quality linear interpolation for demosaicing of
+bayer-patterned color images,” in 2004 IEEE International Conference on Acoustics, Speech,
+and Signal Processing, vol. 3. IEEE, 2004, pp. iii–485.
+
+<a id="1">[2]</a> 
 Qing Zhang and Yongwei Nie and Weishi Zheng.
 "Dual Illumination Estimation for Robust Exposure Correction".
 Computer Graphics Forum, 2019, 38.
 
-<a id="1">[2]</a> 
+<a id="1">[3]</a> 
 G. Meng, Y. Wang, J. Duan, S. Xiang and C. Pan, "Efficient Image Dehazing with Boundary Constraint and Contextual Regularization," 2013 IEEE International Conference on Computer Vision, 2013, pp. 617-624, doi: 10.1109/ICCV.2013.82.
 
-<a id="1">[3]</a> 
+<a id="1">[4]</a> 
 https://github.com/Utkarsh-Deshmukh/Single-Image-Dehazing-Python
 
-<a id="1">[4]</a> 
+<a id="1">[5]</a> 
 https://github.com/pvnieo/Low-light-Image-Enhancement

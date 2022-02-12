@@ -60,6 +60,11 @@ def perform_gamma_correction(image, gamma):
 	table = generate_lookup_table(gamma)
 	return cv2.LUT(image, table)
 
+
+def make_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def dehaze(image, output_path, beta=0.425):
     HazeImg = image
 
@@ -108,7 +113,33 @@ if __name__ == "__main__":
 	if not os.path.exists(os.path.join(output_dir,"{}/".format(image_id)) ):
 		os.makedirs(os.path.join(output_dir,"{}/".format(image_id)))
 
-	#METHOD-1  : unsharp_masking
+
+	
+
+	#Method 1: Adaptive Histogram Equalization
+	adaptive_histogram_equilization_output_path = os.path.join(output_dir,"{}/".format(image_id),"Adaptive_histogram_equilization")
+	make_dir(path=adaptive_histogram_equilization_output_path)
+	i = 3
+	j = (7,7)
+	clahe = cv2.createCLAHE(clipLimit=i,tileGridSize=j)
+
+	#HSV
+	imgTohsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+	imgTohsv[:,:,2] = clahe.apply(imgTohsv[:,:,2])
+	imgOutputhsv = cv2.cvtColor(imgTohsv, cv2.COLOR_HSV2BGR)
+	cv2.putText(imgOutputhsv, "HSV"+" tile:"+str(j)+" clip:"+str(i), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
+	cv2.imwrite(os.path.join(adaptive_histogram_equilization_output_path,"adaptive_histogram_equilization_output_hsv"+"tile_"+str(j)+" clip_"+str(i)+".jpg"), imgOutputhsv)
+
+	#LAB
+	imgTolab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+	imgTolab[:,:,0] = clahe.apply(imgTolab[:,:,0])
+	imgOutputlab = cv2.cvtColor(imgTolab, cv2.COLOR_LAB2BGR)
+	cv2.putText(imgOutputlab, "LAB"+" tile:"+str(j)+" clip:"+str(i), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
+	cv2.imwrite(os.path.join(adaptive_histogram_equilization_output_path,"adaptive_histogram_equilization_output_lab"+"tile_"+str(j)+" clip_"+str(i)+".jpg"), imgOutputlab)
+	print("DONE with Method 1: Adaptive Histogram Equalization")
+
+
+	#METHOD-2  : unsharp_masking
 	ksize=(3,3)
 	sigma = 1.0
 	maskwt = 5.0 # weight of unsharp mask to be added to the image
@@ -118,12 +149,11 @@ if __name__ == "__main__":
 	cv2.putText(sharp_image_unsharp_masking, image_caption, (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 	output_image_name = "{}/1.unsharp_maskwt_{:.3f}.png".format(image_id, maskwt)
 	cv2.imwrite(os.path.join(output_dir, output_image_name ) , sharp_image_unsharp_masking)
-	print("DONE with METHOD-1  : unsharp_masking")
+	print("DONE with METHOD-2  : unsharp_masking")
 
 
 
-	#METHOD-2  : dehaze-> unsharp_masking
-
+	#METHOD-3  : dehaze-> unsharp_masking
 	# beta: parameter for dehazing
 	if image_id==1:
 		beta = .425
@@ -147,12 +177,12 @@ if __name__ == "__main__":
 	cv2.putText(sharp_image_unsharp_masking, image_caption, (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 	output_image_name = "{}/2.dehaze_{:.3f}_unsharp_maskwt_{:.3f}.png".format(image_id, beta, maskwt) 
 	cv2.imwrite(os.path.join(output_dir, output_image_name), sharp_image_unsharp_masking)
-	print("DONE with METHOD-2  : dehaze -> unsharp_masking")
+	print("DONE with METHOD-3  : dehaze -> unsharp_masking")
 	
 
 
 
-	#METHOD-3  : dehaze-> gamma_correction -> unsharp_masking
+	#METHOD-4  : dehaze-> gamma_correction -> unsharp_masking
 	gamma = 1.2 # used for gamma correction
 	gamma_adjusted = perform_gamma_correction(dehazed_image, gamma)
 	
@@ -162,7 +192,9 @@ if __name__ == "__main__":
 	cv2.putText(sharp_image_unsharp_masking, image_caption, (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 	output_image_name = "{}/3.dehaze_{:.3f}_gamma={:.2f}_unsharp_maskwt_{:.3f}.png".format(image_id, beta, gamma, maskwt)
 	cv2.imwrite(os.path.join(output_dir, output_image_name) , sharp_image_unsharp_masking)
-	print("DONE with METHOD-3  : dehaze-> gamma_correction -> unsharp_masking")
+	print("DONE with METHOD-4  : dehaze-> gamma_correction -> unsharp_masking")
+
+	
 
 	
 	sharp_image_laplacian = sharp_using_Laplacian(image,ksize=3)
