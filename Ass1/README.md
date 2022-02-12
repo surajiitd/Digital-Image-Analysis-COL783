@@ -39,13 +39,6 @@
 	```
 	
 
-
-**References :**
-	-https://github.com/Utkarsh-Deshmukh/Single-Image-Dehazing-Python
-	-https://github.com/pvnieo/Low-light-Image-Enhancement
-	-
-
-	
 ## References
 
 <a id="1">[1]</a> 

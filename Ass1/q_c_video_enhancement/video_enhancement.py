@@ -43,8 +43,8 @@ make_dir(path=outputFramesPath)
 
 FrameCapture(inputVideoPath, outputFramesPath)
 
-img_array = []
-for filename in range(3):
+img_array = []              
+for filename in range(375):
     filename = str(filename)+".jpg"
     print(filename)
     HazeImg = cv2.imread(os.path.join(outputFramesPath,filename))
