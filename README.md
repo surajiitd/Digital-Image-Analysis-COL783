@@ -1,14 +1,14 @@
 # Digital Image Analysis COL783
 
-Programming Assignments, Project of IIT Delhi's course Digital Image Analysis COL783 offered in 2022 Spring
+Programming Assignments, Project of IIT Delhi's course Digital Image Analysis COL783 offered in 2022 Spring.
 
-## Implemented various concepts of Computer Vision 
+## Implemented various concepts of Computer Vision.
 
-Assignment1: 
+* Assignment1: Demosaicing, Image and Video Enhancement for Night-time images and Foggy images.
 
-Assignment2: 
+* Assignment2: 
 
-Assignment3: 
+* Assignment3: 
 
-Project : 
+* Project : 
 
