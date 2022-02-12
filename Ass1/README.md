@@ -3,7 +3,7 @@
 ## Commands to run :
 
 ## A. Demosaiking
-	- go to q_a_demosaicing and execute:
+ - go to q_a_demosaicing and execute:
 	```
 	python3 q1.py -i "../data/demosaicing"
 	```
@@ -53,14 +53,11 @@ Qing Zhang and Yongwei Nie and Weishi Zheng.
 "Dual Illumination Estimation for Robust Exposure Correction".
 Computer Graphics Forum, 2019, 38.
 
+<a id="1">[2]</a> 
+G. Meng, Y. Wang, J. Duan, S. Xiang and C. Pan, "Efficient Image Dehazing with Boundary Constraint and Contextual Regularization," 2013 IEEE International Conference on Computer Vision, 2013, pp. 617-624, doi: 10.1109/ICCV.2013.82.
 
+<a id="1">[3]</a> 
+https://github.com/Utkarsh-Deshmukh/Single-Image-Dehazing-Python
 
-
-@article{Zhang2019DualIE,
-  title={Dual Illumination Estimation for Robust Exposure Correction},
-  author={},
-  journal={Computer Graphics Forum},
-  year={2019},
-  volume={38}
-}
-	
+<a id="1">[4]</a> 
+https://github.com/pvnieo/Low-light-Image-Enhancement
