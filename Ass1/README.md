@@ -3,6 +3,7 @@
 ## Commands to run :
 
 ## A. Demosaiking
+ - we have provided output images in the same directory
  - go to q_a_demosaicing and execute:
 	```
 	python3 q1.py -i "../data/demosaicing"
@@ -12,6 +13,7 @@
 ## B. Image enhancement
 
 #### 1. Night-time images:
+ - there were many output images, so we have included only the best results.
  - go to q_b1_enhancing_night_images and execute:
  - To execute conventional methods of Image Processing:
 	```
@@ -26,6 +28,7 @@
 
 
 #### 2. Foggy images:
+ - we have provided output images in the same directory.
  - go to q_b2_enhancing_foggy_images and execute:
 	``` 
 	python3 fog.py -i "../data/fog" -o "output" 
@@ -33,6 +36,7 @@
 
 
 ## C. Video enhancement
+ - uploaded the video in the [[link](https://drive.google.com/file/d/1KiLekBdWgPJIn323J51lY1_AaRp8Gmhw/view?usp=sharing)].
  - go to q_c_video_enhancement and execute:
 	``` 
 	python3 video_enhancement.py -i "../data/night_time_video_iitd.mp4" -o "./" 

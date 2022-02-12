@@ -11,10 +11,10 @@ def calculate_psnr(img, gt):
 	mse_g = np.sum(diff[:,:,1])/(h*w)
 	mse_r = np.sum(diff[:,:,2])/(h*w)
 
-	print("mse = ",mse_b, mse_g, mse_r)
+	#print("mse = {:.3f}, {:.3f}, {:.3f}".format(mse_b, mse_g, mse_r))
 
 	psnr_b = round(10*math.log10(255**2 / mse_b), 4)
 	psnr_g = round(10*math.log10(255**2 / mse_g), 4)
 	psnr_r = round(10*math.log10(255**2 / mse_r), 4)
-	print("PSNR = ", psnr_b, psnr_g, psnr_r)
+	#print("PSNR = {:.3f}, {:.3f}, {:.3f}".format(psnr_b, psnr_g, psnr_r) )
 	return (psnr_b, psnr_g, psnr_r)

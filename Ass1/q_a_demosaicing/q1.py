@@ -381,7 +381,6 @@ if __name__=="__main__":
 	img_shape = bayer_img.shape
 
 	color_img = np.zeros(bayer_img.shape + (3,), dtype='uint8')
-	print(color_img.shape)
 
 	#checking to print the bayer pattern
 	print("our Bayer Pattern:")
@@ -445,7 +444,5 @@ if __name__=="__main__":
 	matlab_img_psnr = calculate_psnr(matlab_img,gt)
 	print("matlab PSNR:",matlab_img_psnr)
 	print("improvement over bil image = " ,[round(x-y,4) for x,y in zip(matlab_img_psnr, bil_img_psnr)])
-	print("only bil",bil_img[172,370])
-	print("colr img",color_img[172,370])
 
 
