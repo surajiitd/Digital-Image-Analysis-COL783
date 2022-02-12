@@ -1,10 +1,4 @@
 __pycache__
 other_codes
-sharpening/*.png
-sharpening/*/*.png
-sharpening/*.jpg
-sharpening/*/*.jpg
-q_bc/output_*
 test.py
 rough
-submission
