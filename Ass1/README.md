@@ -12,28 +12,28 @@
 ## B. Image enhancement
 
 #### 1. Night-time images:
-	- go to q_b1_enhancing_night_images and execute:
-	- To execute conventional methods of Image Processing:
+ - go to q_b1_enhancing_night_images and execute:
+ - To execute conventional methods of Image Processing:
 	```
 	python3 image_enhancement.py -i "../data/night" -o "output" 
 	```
 
 
-	- To execute method implemented in paper that we referring:
+ - To execute method implemented in paper that we referring:
 	```
 	python3 demo.py 
 	```
 
 
 #### 2. Foggy images:
-	- go to q_b2_enhancing_foggy_images and execute:
+ - go to q_b2_enhancing_foggy_images and execute:
 	``` 
 	python3 fog.py -i "../data/fog" -o "output" 
 	```
 
 
 ## C. Video enhancement
-	- go to q_c_video_enhancement and execute:
+ - go to q_c_video_enhancement and execute:
 	``` 
 	python3 video_enhancement.py -i "../data/night_time_video_iitd.mp4" -o "./" 
 	```
