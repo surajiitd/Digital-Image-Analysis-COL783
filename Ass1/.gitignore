@@ -5,3 +5,4 @@ sharpening/*/*.png
 sharpening/*.jpg
 sharpening/*/*.jpg
 q_bc/output_*
+test.py
