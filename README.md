@@ -6,7 +6,7 @@ Programming Assignments, Project of IIT Delhi's course Digital Image Analysis CO
 
 * **Assignment1:** Demosaicing, Image and Video Enhancement for Night-time images and Foggy images.
 
-* **Assignment2:**
+* **Assignment2:** Mosaicing (Panorama Construction from Images). Image stitching and Blending.
 
 * **Assignment3:** 
 
