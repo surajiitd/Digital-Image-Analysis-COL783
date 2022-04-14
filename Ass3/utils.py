@@ -3,51 +3,63 @@ from const import *
 from math import *
 import cv2
 
-def transformRGB2YIQ(imgRGB: np.ndarray) -> np.ndarray:
+def transformRGB2YIQ(imRGB: np.ndarray) -> np.ndarray:
     """
     Converts an RGB image to YIQ color space
     :param imgRGB: An Image in RGB
     :return: A YIQ in image color space
     """
-    yiq_from_rgb = np.array([[0.299, 0.587, 0.114],
-                             [0.59590059, -0.27455667, -0.32134392],
-                             [0.21153661, -0.52273617, 0.31119955]])
-    OrigShape=imgRGB.shape
-    return np.dot(imgRGB.reshape(-1,3), yiq_from_rgb.transpose()).reshape(OrigShape)
 
-    pass
+    rows,cols,dims = imRGB.shape
+    imYIQ = np.zeros((rows,cols,dims))
 
 
-def transformYIQ2RGB(imgYIQ: np.ndarray) -> np.ndarray:
+    imYIQ[:,:,0] = 0.299*imRGB[:,:,0] + 0.587 * imRGB[:,:,1] + 0.114 * imRGB[:,:,2];
+    imYIQ[:,:,1] = 0.596 * imRGB[:,:,0] - 0.275 * imRGB[:,:,1] - 0.321 * imRGB[:,:,2];
+    imYIQ[:,:,2] = 0.212 * imRGB[:,:,0] - 0.523 * imRGB[:,:,1] + 0.311 * imRGB[:,:,2];
+   
+    return imYIQ
+
+
+def transformYIQ2RGB(imYIQ: np.ndarray) -> np.ndarray:
     """
     Converts an YIQ image to RGB color space
     :param imgYIQ: An Image in YIQ
     :return: A RGB in image color space
     """
-    yiq_from_rgb = np.array([[0.299, 0.587, 0.114],
+    transformMatrix = np.array([[0.299, 0.587, 0.114],
                              [0.59590059, -0.27455667, -0.32134392],
                              [0.21153661, -0.52273617, 0.31119955]])
-    OrigShape=imgYIQ.shape
-    return np.dot(imgYIQ.reshape(-1,3), np.linalg.inv(yiq_from_rgb).transpose()).reshape(OrigShape)
+    transformMatrix = np.linalg.inv(transformMatrix)
+    (rows, cols, dims) = imYIQ.shape
+    imRGB = np.zeros( (rows, cols, dims))
+    
+    imRGB[:, :, 0] = transformMatrix[0,0] * imYIQ[:,:,0] + transformMatrix[0,1] * imYIQ[:,:,1] + transformMatrix[0,2] * imYIQ[:,:,2]
+    imRGB[:, :, 1] = transformMatrix[1,0] * imYIQ[:,:,0] + transformMatrix[1,1] * imYIQ[:,:,1] + transformMatrix[1,2] * imYIQ[:,:,2]
+    imRGB[:, :, 2] = transformMatrix[2,0] * imYIQ[:,:,0] + transformMatrix[2,1] * imYIQ[:,:,1] + transformMatrix[2,2] * imYIQ[:,:,2]
 
-    pass
+    return imRGB
 
 def build_pyramid(img):
 	img_pyr = [None]*(NUMCELLS+1)  #start indexing from 1
 	for level in range(1,MID):
 		diff = level - MID
 		
-		new_size = (img.shape[1]*ALPHA**diff, img.shape[0]*ALPHA**diff)
+		new_size = (img.shape[1]*(ALPHA**diff), img.shape[0]*(ALPHA**diff))
 
 		print("level - ",level)
 		print("new size of image =",new_size)
 		new_size = (floor(new_size[0] + EPSILON),floor(new_size[1] + EPSILON));
 		print("new decim size of image = ",new_size)
 		img_pyr[level] = cv2.resize(img,new_size,interpolation=cv2.INTER_LINEAR)
+
+
 	img_pyr[MID] = img;
+
+
 	for level in range(MID+1,NUMCELLS+1):
 		diff = level - MID
-		new_size = (img.shape[0]*ALPHA**diff, img.shape[1]*ALPHA**diff)
+		new_size = (img.shape[0]*(ALPHA**diff), img.shape[1]*(ALPHA**diff))
 		print("level - ",level)
 		print("new size of image =",new_size)
 		new_size = (floor(new_size[0]),floor(new_size[1]));
@@ -88,8 +100,8 @@ def img2patches(img):
 	# pi = []
 	# pj = []
 	patches_p = np.array([-1]*PATCH_SIZE,dtype=np.float32)
-	pi = np.array([])
-	pj = np.array([])
+	pi = np.array([],dtype=np.uint8)
+	pj = np.array([],dtype=np.uint8)
 	pindex = 0
 	for r in range(STEP,hp-STEP):
 		for c in range(STEP, wp-STEP):
@@ -101,14 +113,18 @@ def img2patches(img):
 			# pi.append(r)
 			# pj.append(c)
 			patches_p = np.vstack([patches_p,p])
+			#print( "ROW and COL index = ",r,c)
 			pi = np.append(pi,r)
 			pj = np.append(pj,c)
+	#print(patches_p[0])
 	patches_p = np.delete(patches_p,0,0)
+	#print(patches_p[0])
+
 	return (patches_p,pi,pj)
 
 def thresh( img, img_translated, patch_center_x,patch_center_y):
 	p1 = coord2patch(img,patch_center_x,patch_center_y,STEP)
-	p1 = coord2patch(img_translated,patch_center_x,patch_center_y,STEP)
+	p2 = coord2patch(img_translated,patch_center_x,patch_center_y,STEP)
 	threshold = distance(p1,p2)
 	return threshold
 
@@ -118,8 +134,11 @@ def coord2patch(img,i,j,step):
 	p = []
 	if (not checkbounds(h,w,i,j,step)):
 		return
+	
+	i = int(i)
+	j = int(j)
 	p = img[i-step:i+step+1, j-step:j+step+1]
-	p = np.reshape(p,(1,-1))
+	p = np.reshape(p,(-1))
 
 	return p
 
@@ -127,7 +146,7 @@ def distance(p1,p2):
 	sigma = np.std(p2)
 	if(sigma==0):
 		sigma = MIN_STD
-	ssd = np.sum((p1-p2)**2)
+	ssd =np.sum( np.sum((p1-p2)**2))
 	dist = exp(-ssd/sigma)
 	return dist
 
@@ -142,6 +161,16 @@ def get_parent(imp,imq,qi,qj,factor):
 
 	pj,pi = move_level(imq,qj,qi,imp)
 
+	(h,w) = imp.shape
+
+	step = STEP
+	if(checkbounds(h,w,pi,pj,step)):
+		parent_patch = {'image':imp, 'pi': pi, 'pj':pj}
+		b = True
+	else:
+		parent_patch = 0
+		b = False
+	return parent_patch,b
 
 
 
@@ -155,4 +184,62 @@ def move_level(src_level,srcx,srcy,dst_level):
 	dstx = scale_x*srcx - 0.5*scale_x*(1-1/scale_x)
 	dsty = scale_y*srcy - 0.5*scale_y*(1-1/scale_y)
 
-def set_parent():
+	return dstx,dsty
+
+def set_parent(curr_img, curr_pi, curr_pj, new_img,hr_example, factor,weighted_dists,sum_weights,lr_patch,lr_example):
+
+	pj,pi = move_level(curr_img,curr_pj,curr_pi,new_img)
+
+	(h,w) = new_img.shape
+
+	step = STEP
+	w_blur = W
+	if(checkbounds(h,w,pi,pj,step)):
+		#Rectangle to set
+		#print("\npi and pj ",pi,pj)
+		left = ceil(pj-step)
+		right = floor(pj+step)
+		top = ceil(pi-step)
+		bottom = floor(pi+step)
+
+		Xqt = np.array(range(left,right+1))
+		Yqt = np.array(range(top,bottom+1))
+		dist_getx = Xqt - pj; 
+		dist_gety = Yqt - pi;
+
+		#print("left to right ",list(range(left,right+1)))
+		coord_x = hr_example['pj'] + dist_getx
+		coord_y = hr_example['pi'] + dist_gety
+
+		# coord_x = [(hr_coord_x+i) for i in range(-2,3)]
+		# coord_y = [(hr_coord_y+i) for i in range(-2,3)]
+		(X,Y) = np.meshgrid(coord_x,coord_y)
+
+		X = X.astype(np.float32)
+		Y = Y.astype(np.float32)
+		patch = cv2.remap(hr_example['image'],X,Y, cv2.INTER_CUBIC)
+		patch = np.clip(patch, a_min = 0, a_max = 1)
+
+		weight = distance(lr_patch, lr_example)
+		weights = weight
+		sum_weights[top:bottom+1, left:right+1] = sum_weights[top:bottom+1, left:right+1] + weights
+		#print("patch shape = ",patch.shape)
+		#print("weights shape = ",weights)
+		#print(weighted_dists[top:bottom+1, left:right+1].shape)
+		weighted_dists[top:bottom+1, left:right+1] = weighted_dists[top:bottom+1, left:right+1] + patch * weights
+
+	return (weighted_dists,sum_weights,new_img)
+
+# def knnsearch(patches_db, input_patches_p,k):
+
+# 	NNs = []
+# 	Dist = []
+# 	for i in range(len(input_patches_p)):
+# 		patch = input_patches_p[i]
+# 		distances = np.linalg.norm(patches_db-patch, axis=1)
+
+# 		min_index = np.argpartition(distances,k)
+# 		min_index = min_index[:k]
+# 		NNs.append(min_index)
+# 		Dist.append(distances[min_index])
+# 	return np.array(NNs),np.array(Dist)

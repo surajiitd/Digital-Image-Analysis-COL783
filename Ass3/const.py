@@ -49,4 +49,5 @@ INTERP_METHOD_DS='bilinear';
 DIST_THRESH_EPS = 1;
 
 print("NUMCELLS",NUMCELLS)
+print("STEP",STEP)
 print("MID", MID)
