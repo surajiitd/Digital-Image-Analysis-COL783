@@ -1,0 +1,123 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration file="/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/@ann/untitled1.prj" location="/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/@ann" name="untitled1" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname />
+    <param.authnamewatermark />
+    <param.email />
+    <param.company />
+    <param.summary />
+    <param.description />
+    <param.screenshot />
+    <param.version>1.0</param.version>
+    <param.output>${PROJECT_ROOT}/.mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>663d8a4e-d875-4ec0-bf60-eab765847f1c</param.guid>
+    <param.exclude.filters />
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
+    <param.examples />
+    <param.demosxml />
+    <param.apps />
+    <param.registered.apps />
+    <param.docs />
+    <param.getting.started.guide />
+    <param.matlabpath.excludes />
+    <param.javaclasspath.excludes />
+    <param.exported.on.package>false</param.exported.on.package>
+    <param.required.addons />
+    <param.matlab.project.id />
+    <param.matlab.project.name />
+    <param.release.start />
+    <param.release.end />
+    <param.release.current.only>false</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>true</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>true</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
+    <unset>
+      <param.appname />
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.summary />
+      <param.description />
+      <param.screenshot />
+      <param.version />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.exclude.pcodedmfiles />
+      <param.examples />
+      <param.demosxml />
+      <param.apps />
+      <param.registered.apps />
+      <param.docs />
+      <param.getting.started.guide />
+      <param.matlabpath.excludes />
+      <param.javaclasspath.excludes />
+      <param.exported.on.package />
+      <param.required.addons />
+      <param.matlab.project.id />
+      <param.matlab.project.name />
+      <param.release.start />
+      <param.release.end />
+      <param.release.current.only />
+      <param.compatiblity.windows />
+      <param.compatiblity.macos />
+      <param.compatiblity.linux />
+      <param.compatiblity.matlabonline />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
+    </unset>
+    <fileset.rootdir>
+      <file>/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}</file>
+      <file>/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/README.txt</file>
+      <file>/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/ann_class_compile.m</file>
+      <file>/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/ann_wrapper.bib</file>
+      <file>/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/test_ann_class.m</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}" name=".mltbx" optional="false">/home/spatni/git Repos/Digital Image Analysis/Ass3/Single Image Super-Resolution/ann_wrapper/@ann/.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/home/spatni/Matlab</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>false</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>true</linux>
+      <solaris>false</solaris>
+      <osver>5.13.0-37-generic</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>glnxa64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
