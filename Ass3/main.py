@@ -3,6 +3,8 @@ import os
 from utils import *
 from const import *
 import pyflann
+#from scipy.spatial import distance
+
 
 """
 Rough Work:
@@ -12,7 +14,7 @@ INTER_NEAREST
 
 
 """
-
+distance_metric = 'euclidean'
 def SR(img):
 
 	img_pyr = build_pyramid(img)
@@ -27,16 +29,12 @@ def SR(img):
 	qi = np.array([])
 	qj = np.array([])
 	qlvl = np.array([])
+	print("Building patch database...")
 	for lvlq in range(MID-1,0,-1):
 		(input_patches_q,lvlq_pi, lvlq_pj) = img2patches(img_pyr[lvlq])
 		patches_db = np.vstack([patches_db, input_patches_q])
 		qi = np.append(qi,lvlq_pi)
 		qj = np.append(qj,lvlq_pj)
-		# patches_db.extend(input_patches_q)
-		# qi.extend(lvlq_pi)
-		# qj.extend(lvlq_pj)
-		# levels = [lvlq for _ in range(len(lvlq_pi))]
-		# qlvl.extend(levels)
 
 		levels = np.ones(( len(lvlq_pi) ),dtype=np.uint8)  *  lvlq
 		qlvl = np.append(qlvl, levels)
@@ -53,12 +51,19 @@ def SR(img):
 	print("Total no. of patches = ",tot_numPatches)
 	print("no. of query patches = ",query_numPatches)
 	
-
+	print("Performing KNN Search...")
+	print("For K = {}".format(K))
 	#NNs, Dist = knnsearch(patches_db, input_patches_p,K)
-	pyflann.set_distance_type(distance_type='euclidean')
-	flann = pyflann.FLANN()
-	NNs, Dist = flann.nn(patches_db, input_patches_p,K, algorithm="kmeans")
-	Dist = np.sqrt(Dist)
+	# pyflann.set_distance_type(distance_type='euclidean')
+	# flann = pyflann.FLANN()
+
+	#NNs, Dist = flann.nn(patches_db, input_patches_p,K, algorithm="kmeans")
+	#NNs, Dist = kneareset_neighbour(patches_db, input_patches_p, k=K, distance_metric = 'euclidean')
+	#NNs, Dist = knnsearch_cosine(patches_db, input_patches_p_p,K)
+	#NNs, Dist = knnsearch_new(patches_db, input_patches_p,K)
+	#NNs, Dist = kneareset_neighbour_scipy_cosine(patches_db, input_patches_p,k=K)
+	NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
+	#Dist = np.sqrt(Dist)
 	print("nn = {} , D(0,0) {} ".format(NNs[0,0],Dist[0,0]) )
 	print("nn = {} , D(0,1) {} ".format(NNs[0,1],Dist[0,1]) )
 	print("nn = {} , D(0,2) {} ".format(NNs[0,2],Dist[0,2]) )
@@ -163,18 +168,7 @@ if __name__ == "__main__":
 		# i = 2
 		img = cv2.imread(os.path.join("Assignment3_data",images[i]) )
 		img2 = img
-		#img = cv2.imread("blue.png")
 		img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-
-		# yiq_img = transformRGB2YIQ(img)
-		# img = transformYIQ2RGB(yiq_img)
-		# img = img.astype(np.uint8)
-		
-
-		# cv2.imshow("img",img)
-		# cv2.waitKey()
-		# cv2.destroyAllWindows()
-
 
 		output_resolution = (img.shape[1]*SCALE,img.shape[0]*SCALE)
 
@@ -190,10 +184,6 @@ if __name__ == "__main__":
 		img_bicubic = cv2.resize(img,output_resolution, interpolation=cv2.INTER_CUBIC)
 		yiq_img_big = transformRGB2YIQ(img_bicubic)
 
-
-		#grey_img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-		# print("earlier = ",np.max(grey_img))
-		# print("earlier = ",np.min(grey_img))
 		yiq_orig_img = transformRGB2YIQ(img)
 
 		grey_img = yiq_orig_img[:,:,0] 
@@ -219,7 +209,5 @@ if __name__ == "__main__":
 		(h,w,_) = img_SRed.shape
 		img_SRed = img_SRed[5:h-5, 5:w-5]
 		img_SRed = cv2.resize(img_SRed,(w,h))
-		cv2.imshow("output",img_SRed)
-		cv2.waitKey()
-		cv2.destroyAllWindows()
-		cv2.imwrite(images[i][:-4]+"_SR_paper.png",img_SRed)
+
+		cv2.imwrite(images[i][:-4]+"_SR_paper_{}.png".format(distance_metric),img_SRed)

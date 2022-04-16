@@ -2,6 +2,11 @@ import numpy as np
 from const import *
 from math import *
 import cv2
+from scipy.spatial import distance
+import scipy
+from sklearn.neighbors import NearestNeighbors
+from numpy.linalg import norm
+
 
 def transformRGB2YIQ(imRGB: np.ndarray) -> np.ndarray:
     """
@@ -243,3 +248,55 @@ def set_parent(curr_img, curr_pi, curr_pj, new_img,hr_example, factor,weighted_d
 # 		NNs.append(min_index)
 # 		Dist.append(distances[min_index])
 # 	return np.array(NNs),np.array(Dist)
+
+# def kneareset_neighbour(patches_database, query_patches, k, distance_metric = 'euclidean'):
+    
+#     Dist = scipy.spatial.distance.cdist(patches_database, query_patches, distance_metric)
+#     k_idx = np.argpartition(Dist, range(k), axis=0)[:k, :]
+#     k_dist = Dist[np.argpartition(Dist, range(k), axis=0)[:k, :], np.arange(Dist.shape[1])[None, :]]
+
+#     return k_idx.T, k_dist.T
+
+# def knnsearch_cosine(patches_db, input_patches_p,k):
+
+#     NNs = []
+#     Dist = []
+#     for i in range(len(input_patches_p)):
+#         patch = input_patches_p[i]
+#         patchdb_norm = np.linalg.norm(patches_db, axis=1)
+#         dot = np.dot(patches_db,patch)
+#         temp = dot / patchdb_norm
+#         temp = temp / np.linalg.norm(patch)
+#         temp = 1-temp
+#         #print(temp)
+        
+        
+#         min_index = np.argpartition(temp,k)
+#         min_index = min_index[:k]
+#         NNs.append(min_index)
+#         Dist.append(temp[min_index])
+#     return NNs,Dist
+
+
+# def knnsearch_new(patches_db, input_patches,k):
+#     nbrs = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(patches_db)
+#     distances, indices = nbrs.kneighbors(input_patches)
+#     return indices, distances
+
+def euclidean_distance(x,y):
+    return sqrt(np.sum((x-y)**2))
+
+
+def cosine_distance(x,y):
+    return 1-(np.dot(x,y)/(norm(x)*norm(y)))
+
+def knnsearch_scikit(patches_db, input_patches,k, custom_distance_metric):
+    nbrs = NearestNeighbors(n_neighbors=k, algorithm='ball_tree', metric = custom_distance_metric).fit(patches_db)
+    distances, indices = nbrs.kneighbors(input_patches)
+    return indices, distances
+
+# def kneareset_neighbour_scipy_cosine(patches_database, query_patches, k, distance_metric = 'cosine'):
+#     Dist = scipy.spatial.distance.cdist(patches_database, query_patches, distance_metric)
+#     k_idx = np.argpartition(Dist, range(k), axis=0)[:k, :]
+#     k_dist = Dist[np.argpartition(Dist, range(k), axis=0)[:k, :], np.arange(Dist.shape[1])[None, :]]
+#     return k_idx.T, k_dist.T
