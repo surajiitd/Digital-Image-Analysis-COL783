@@ -295,8 +295,8 @@ def knnsearch_scikit(patches_db, input_patches,k, custom_distance_metric):
     distances, indices = nbrs.kneighbors(input_patches)
     return indices, distances
 
-# def kneareset_neighbour_scipy_cosine(patches_database, query_patches, k, distance_metric = 'cosine'):
-#     Dist = scipy.spatial.distance.cdist(patches_database, query_patches, distance_metric)
-#     k_idx = np.argpartition(Dist, range(k), axis=0)[:k, :]
-#     k_dist = Dist[np.argpartition(Dist, range(k), axis=0)[:k, :], np.arange(Dist.shape[1])[None, :]]
-#     return k_idx.T, k_dist.T
+def knnsearch_scikit_brut(patches_db, input_patches,k, metric):
+    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute', metric = metric).fit(patches_db)
+    distances, indices = nbrs.kneighbors(input_patches)
+    return indices, distances
+

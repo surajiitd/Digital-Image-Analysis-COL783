@@ -10,7 +10,7 @@
    http://www.wisdom.weizmann.ac.il/~bagon
 
         The core cpp application was written by David M. Mount and Sunil Arya
-	(available from http://www.cs.umd.edu/~mount/ANN/):
+	(available from http://www.cs.umd.edu/~mount/ANN/):    
 
 	ANN is a library for approximate nearest neighbor searching,
 	based on the use of standard and priority search in kd-trees

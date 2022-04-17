@@ -14,6 +14,7 @@ INTER_NEAREST
 
 
 """
+# Choices for distance metric are: 'euclidean'(or l2), 'manhattan'(or l1), 'cosine'(for cosine distances),  
 distance_metric = 'euclidean'
 def SR(img):
 
@@ -62,7 +63,10 @@ def SR(img):
 	#NNs, Dist = knnsearch_cosine(patches_db, input_patches_p_p,K)
 	#NNs, Dist = knnsearch_new(patches_db, input_patches_p,K)
 	#NNs, Dist = kneareset_neighbour_scipy_cosine(patches_db, input_patches_p,k=K)
-	NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
+	if(distance_metric=='euclidean' or distance_metric=='manhattan'):
+		NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
+	elif (distance_metric =='cosine' or distance_metric=='correlation'):   # for distance_metric == 'cosine' or 
+		NNs, Dist = knnsearch_scikit_brut(patches_db, input_patches_p,k=K, metric=distance_metric)
 	#Dist = np.sqrt(Dist)
 	print("nn = {} , D(0,0) {} ".format(NNs[0,0],Dist[0,0]) )
 	print("nn = {} , D(0,1) {} ".format(NNs[0,1],Dist[0,1]) )
