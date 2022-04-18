@@ -101,8 +101,10 @@ def img2patches(img):
 	(hp,wp) = img.shape
 
 	numPatches = hp*wp
+	# patches_p = []
+	# pi = []
+	# pj = []
 	patches_p = np.array([-1]*PATCH_SIZE,dtype=np.float32)
-	gaussian_patches_p = np.array([-1]*PATCH_SIZE,dtype=np.float32)
 	pi = np.array([],dtype=np.uint8)
 	pj = np.array([],dtype=np.uint8)
 	pindex = 0
@@ -110,23 +112,14 @@ def img2patches(img):
 		for c in range(STEP, wp-STEP):
 			pindex = pindex + 1
 			p = img[r-STEP:r+STEP+1, c-STEP: c+STEP+1]
-			
-			#Apply gaussian weight to patch p
-			gaussian_kernel = gkern(5,1.)
-			gaussian_p = p*gaussian_kernel
-			
 			p = np.reshape(p,(-1))
-			gaussian_p = np.reshape(gaussian_p,(-1))
 
 			patches_p = np.vstack([patches_p,p])
-			gaussian_patches_p = np.vstack([gaussian_patches_p, gaussian_p])
-
 			pi = np.append(pi,r)
 			pj = np.append(pj,c)
 	patches_p = np.delete(patches_p,0,0)
-	gaussian_patches_p = np.delete(gaussian_patches_p,0,0)
 
-	return (gaussian_patches_p, patches_p,pi,pj)
+	return (patches_p,pi,pj)
 
 def thresh( img, img_translated, patch_center_x,patch_center_y):
 	p1 = coord2patch(img,patch_center_x,patch_center_y,STEP)
@@ -178,14 +171,7 @@ def get_parent(imp,imq,qi,qj,factor):
 		b = False
 	return parent_patch,b
 
-def gkern(l=5, sig=1.):
-    """\
-    creates gaussian kernel with side length `l` and a sigma of `sig`
-    """
-    ax = np.linspace(-(l - 1) / 2., (l - 1) / 2., l)
-    gauss = np.exp(-0.5 * np.square(ax) / np.square(sig))
-    kernel = np.outer(gauss, gauss)
-    return kernel / np.sum(kernel)
+
 
 def move_level(src_level,srcx,srcy,dst_level):
 	#reverse to matlabs mapping function in imresize

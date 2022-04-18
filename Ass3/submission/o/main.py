@@ -2,7 +2,7 @@ import cv2
 import os
 from utils import *
 from const import *
-#import pyflann
+import pyflann
 import numpy as np
 import argparse
 
@@ -15,24 +15,21 @@ def SR(img,distance_metric):
 
 	#Init patch database, according to current highest filled layer.
 	patches_db = np.array([-1]*PATCH_SIZE,dtype=np.float32)
-	gaussian_patches_db = np.array([-1]*PATCH_SIZE,dtype=np.float32)
 	qi = np.array([])
 	qj = np.array([])
 	qlvl = np.array([])
 	print("Building patch database...")
 	for lvlq in range(MID-1,0,-1):
-		(input_patches_q,gaussian_input_patches_q,lvlq_pi, lvlq_pj) = img2patches(img_pyr[lvlq])
+		(input_patches_q,lvlq_pi, lvlq_pj) = img2patches(img_pyr[lvlq])
 		patches_db = np.vstack([patches_db, input_patches_q])
-		gaussian_patches_db = np.vstack([gaussian_patches_db, gaussian_input_patches_q])
 		qi = np.append(qi,lvlq_pi)
 		qj = np.append(qj,lvlq_pj)
 
 		levels = np.ones(( len(lvlq_pi) ),dtype=np.uint8)  *  lvlq
 		qlvl = np.append(qlvl, levels)
 	patches_db = np.delete(patches_db,0,0)
-	gaussian_patches_db = np.delete(gaussian_patches_db,0,0)
 
-	(input_patches_p, gaussian_input_patches_p, input_pi,input_pj) = img2patches(img_pyr[MID])
+	(input_patches_p,input_pi,input_pj) = img2patches(img_pyr[MID])
 
 	print("LENGTH of 1 PATCH = ",len(input_patches_p[0]))
 
@@ -46,10 +43,7 @@ def SR(img,distance_metric):
 	print("For K = {}".format(K))
 
 	#Find k nearest neighbor patch of pathches in current image in the image pyramid (from mid-1 to lowest level)
-	if(distance_metric == 'gaussian'):
-		print("Doing based on gaussian SSD...")
-		NNs, Dist = knnsearch_scikit(gaussian_patches_db, gaussian_input_patches_p,k=K, custom_distance_metric='euclidean')
-	elif(distance_metric=='euclidean' or distance_metric=='manhattan'):
+	if(distance_metric=='euclidean' or distance_metric=='manhattan'):
 		NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
 	elif (distance_metric =='cosine' or distance_metric=='correlation'):  
 		NNs, Dist = knnsearch_scikit_brut(patches_db, input_patches_p,k=K, metric=distance_metric)
@@ -134,7 +128,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-i', '--inp', type=str, help='path to input image')
 	parser.add_argument('-o','--out', type=str, help='path to store output images')
-	parser.add_argument('-d','--dist', type=str, default='euclidean', help='distance_metric among : gaussian, euclidean, manhattan, cosine, correlation')
+	parser.add_argument('-d','--dist', type=str, default='euclidean', help='distance_metric among : euclidean, manhattan, cosine, correlation')
 	args = parser.parse_args()
 
 	input_path = args.inp
