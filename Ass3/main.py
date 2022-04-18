@@ -3,27 +3,18 @@ import os
 from utils import *
 from const import *
 import pyflann
-#from scipy.spatial import distance
+import numpy as np
 
 
-"""
-Rough Work:
-
-INTER_NEAREST
-
-
-
-"""
 # Choices for distance metric are: 'euclidean'(or l2), 'manhattan'(or l1), 'cosine'(for cosine distances),  
-distance_metric = 'euclidean'
+distance_metric = 'euclidean'  #'euclidean', 'manhattan', 'cosine'
+
+
 def SR(img):
 
 	img_pyr = build_pyramid(img)
 	highest_lvl_filled = MID;
 	out_x, out_y = translate_img_by_half_pixel(img)
-	cv2.imwrite("out_x.png",out_x)
-	cv2.imwrite("out_y.png",out_y)
-
 
 	#Init patch database, according to current highest filled layer.
 	patches_db = np.array([-1]*PATCH_SIZE,dtype=np.float32)
@@ -43,7 +34,6 @@ def SR(img):
 
 	(input_patches_p,input_pi,input_pj) = img2patches(img_pyr[MID])
 
-	print("input_pi = ",input_pi)
 	print("LENGTH of 1 PATCH = ",len(input_patches_p[0]))
 
 	next_target_start = MID+1;
@@ -54,29 +44,13 @@ def SR(img):
 	
 	print("Performing KNN Search...")
 	print("For K = {}".format(K))
-	#NNs, Dist = knnsearch(patches_db, input_patches_p,K)
-	# pyflann.set_distance_type(distance_type='euclidean')
-	# flann = pyflann.FLANN()
 
-	#NNs, Dist = flann.nn(patches_db, input_patches_p,K, algorithm="kmeans")
-	#NNs, Dist = kneareset_neighbour(patches_db, input_patches_p, k=K, distance_metric = 'euclidean')
-	#NNs, Dist = knnsearch_cosine(patches_db, input_patches_p_p,K)
-	#NNs, Dist = knnsearch_new(patches_db, input_patches_p,K)
-	#NNs, Dist = kneareset_neighbour_scipy_cosine(patches_db, input_patches_p,k=K)
+	#Find k nearest neighbor patch of pathches in current image in the image pyramid (from mid-1 to lowest level)
 	if(distance_metric=='euclidean' or distance_metric=='manhattan'):
 		NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
-	elif (distance_metric =='cosine' or distance_metric=='correlation'):   # for distance_metric == 'cosine' or 
+	elif (distance_metric =='cosine' or distance_metric=='correlation'):  
 		NNs, Dist = knnsearch_scikit_brut(patches_db, input_patches_p,k=K, metric=distance_metric)
-	#Dist = np.sqrt(Dist)
-	print("nn = {} , D(0,0) {} ".format(NNs[0,0],Dist[0,0]) )
-	print("nn = {} , D(0,1) {} ".format(NNs[0,1],Dist[0,1]) )
-	print("nn = {} , D(0,2) {} ".format(NNs[0,2],Dist[0,2]) )
 
-	print("len(NNs) = ",len(NNs))
-	print("len(NNs[0]) = ",len(NNs[0]))
-	print("type(NNs)",type(NNs))
-	print("type(NNs[0])",type(NNs[0]))
-	print("NNs.shape",NNs.shape)
 
 	for next_target in range(next_target_start,NUMCELLS+1):
 		skipped = 0
@@ -89,7 +63,6 @@ def SR(img):
 		sum_weights = np.zeros((htg,wtg))
 		factor_src = htg/img.shape[0]
 
-		print("factor_src = ",factor_src)
 		no_of_query_patches = len(NNs)
 		for p_idx in range(0,no_of_query_patches):
 			if(p_idx % 1000 == 0):
@@ -141,19 +114,11 @@ def SR(img):
 						new_img,hr_example, factor_src, weighted_dists, \
 						 sum_weights, lr_patch, patches_db[nn,:] ) 
 
-		print("shape of weighted_dists = ", weighted_dists.shape)
-		print("shape of sum_weights = ", sum_weights.shape)
 		new_img = weighted_dists/sum_weights
 		new_img[ np.isnan(new_img) ] = 0
 
-		## DO UNSHARP MASKING here.....
-
-		# cv2.imshow("output",new_img)
-		# cv2.waitKey()
-		# cv2.destroyAllWindows()
 		img_pyr[next_target] = new_img
 		highest_lvl_filled = next_target
-
 
 	output = new_img
 	return output
@@ -164,12 +129,12 @@ def SR(img):
 if __name__ == "__main__":
 
 	images = ["inp1_forest.png","inp2_world_war2.png", "inp3_building.png"]
+
 	#output_resolutions = [ (552, 296), (610, 385), (487,261)]
 	#output_resolutions = [ (296,552), (385,610), (261,487)]
 
 	for i in range(len(images)):
 	
-		# i = 2
 		img = cv2.imread(os.path.join("Assignment3_data",images[i]) )
 		img2 = img
 		img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -191,22 +156,14 @@ if __name__ == "__main__":
 		yiq_orig_img = transformRGB2YIQ(img)
 
 		grey_img = yiq_orig_img[:,:,0] 
-
-		print(grey_img)
-		# print("after = ",np.max(grey_img))
-		# print("after = ",np.min(grey_img))
-
-
-		print(grey_img.shape)
-
+		grey_img = grey_img.astype(np.float32)
 		grey_img = grey_img/255
+
 		grey_SRed = SR(grey_img)
 
 
 		grey_SRed *= 255
-		#cv2.imwrite(images[i][:-4]+"_grey.png",grey_SRed)
 		yiq_img_big[:,:,0] = grey_SRed
-
 		img_SRed = transformYIQ2RGB(yiq_img_big)
 		img_SRed = img_SRed.astype(np.uint8)
 		img_SRed = cv2.cvtColor(img_SRed, cv2.COLOR_RGB2BGR)
@@ -215,3 +172,17 @@ if __name__ == "__main__":
 		img_SRed = cv2.resize(img_SRed,(w,h))
 
 		cv2.imwrite(images[i][:-4]+"_SR_paper_{}.png".format(distance_metric),img_SRed)
+
+
+		## DO UNSHARP MASKING
+		ksize=(3,3)
+		sigma = 1.0
+		maskwt = 3.0 # weight of unsharp mask to be added to the image
+		image_caption = "maskwt={:.3f}".format(maskwt)
+		sharp_image = unsharp_masking(img_SRed,ksize=ksize, sigma=sigma, maskwt=maskwt)
+		cv2.imwrite(images[i][:-4]+"_SR_paper_{}_unsharp_masking.png".format(distance_metric),sharp_image)		
+
+		cv2.putText(sharp_image, image_caption, (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+		print("DONE with unsharp_masking")
+		cv2.imwrite(images[i][:-4]+"_SR_paper_{}_unsharp_masking_{}.png".format(distance_metric,image_caption),sharp_image)		
+		

@@ -11,9 +11,6 @@ def SR(img):
 	img_pyr = build_pyramid(img)
 	highest_lvl_filled = MID;
 	out_x, out_y = translate_img_by_half_pixel(img)
-	cv2.imwrite("out_x.png",out_x)
-	cv2.imwrite("out_y.png",out_y)
-
 
 	#Init patch database, according to current highest filled layer.
 	patches_db = np.array([-1]*PATCH_SIZE,dtype=np.float32)
@@ -26,11 +23,6 @@ def SR(img):
 		patches_db = np.vstack([patches_db, input_patches_q])
 		qi = np.append(qi,lvlq_pi)
 		qj = np.append(qj,lvlq_pj)
-		# patches_db.extend(input_patches_q)
-		# qi.extend(lvlq_pi)
-		# qj.extend(lvlq_pj)
-		# levels = [lvlq for _ in range(len(lvlq_pi))]
-		# qlvl.extend(levels)
 
 		levels = np.ones(( len(lvlq_pi) ),dtype=np.uint8)  *  lvlq
 		qlvl = np.append(qlvl, levels)
@@ -49,26 +41,11 @@ def SR(img):
 	
 	print("Performing KNN Search...")
 	print("For K = {}".format(K))
-	#NNs, Dist = knnsearch(patches_db, input_patches_p,K)
-	# pyflann.set_distance_type(distance_type='euclidean')
-	# flann = pyflann.FLANN()
 
-	#NNs, Dist = flann.nn(patches_db, input_patches_p,K, algorithm="kmeans")
-	#NNs, Dist = kneareset_neighbour(patches_db, input_patches_p, k=K, distance_metric = 'euclidean')
-	#NNs, Dist = knnsearch_cosine(patches_db, input_patches_p_p,K)
-	#NNs, Dist = knnsearch_new(patches_db, input_patches_p,K)
-	#NNs, Dist = kneareset_neighbour_scipy_cosine(patches_db, input_patches_p,k=K)
+
 	NNs, Dist = knnsearch_scikit(patches_db, input_patches_p,k=K, custom_distance_metric=distance_metric)
 	#Dist = np.sqrt(Dist)
-	print("nn = {} , D(0,0) {} ".format(NNs[0,0],Dist[0,0]) )
-	print("nn = {} , D(0,1) {} ".format(NNs[0,1],Dist[0,1]) )
-	print("nn = {} , D(0,2) {} ".format(NNs[0,2],Dist[0,2]) )
 
-	print("len(NNs) = ",len(NNs))
-	print("len(NNs[0]) = ",len(NNs[0]))
-	print("type(NNs)",type(NNs))
-	print("type(NNs[0])",type(NNs[0]))
-	print("NNs.shape",NNs.shape)
 
 	for next_target in range(next_target_start,NUMCELLS+1):
 		skipped = 0
@@ -133,16 +110,8 @@ def SR(img):
 						new_img,hr_example, factor_src, weighted_dists, \
 						 sum_weights, lr_patch, patches_db[nn,:] ) 
 
-		print("shape of weighted_dists = ", weighted_dists.shape)
-		print("shape of sum_weights = ", sum_weights.shape)
 		new_img = weighted_dists/sum_weights
 		new_img[ np.isnan(new_img) ] = 0
-
-		## DO UNSHARP MASKING here.....
-
-		# cv2.imshow("output",new_img)
-		# cv2.waitKey()
-		# cv2.destroyAllWindows()
 		img_pyr[next_target] = new_img
 		highest_lvl_filled = next_target
 
@@ -179,7 +148,7 @@ def main_SR(img):
 if __name__ == "__main__":
 
 	images = ["inp1_forest.png","inp2_world_war2.png", "inp3_building.png"]
-	#images = ["inp2_world_war2.png"]
+
 	#output_resolutions = [ (552, 296), (610, 385), (487,261)]
 	#output_resolutions = [ (296,552), (385,610), (261,487)]
 
@@ -195,7 +164,6 @@ if __name__ == "__main__":
 		rotated90_flipped = cv2.flip(rotated90,0)  
 		rotated180_flipped = cv2.flip(rotated180,0)  
 		rotated270_flipped = cv2.flip(rotated270,0)  
-		
 		
 		
 		# Call the SR function for all transformed images.

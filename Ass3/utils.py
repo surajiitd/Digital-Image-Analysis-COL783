@@ -52,10 +52,10 @@ def build_pyramid(img):
 		
 		new_size = (img.shape[1]*(ALPHA**diff), img.shape[0]*(ALPHA**diff))
 
-		print("level - ",level)
-		print("new size of image =",new_size)
+		# print("level - ",level)
+		# print("new size of image =",new_size)
 		new_size = (floor(new_size[0] + EPSILON),floor(new_size[1] + EPSILON));
-		print("new decim size of image = ",new_size)
+		# print("new decim size of image = ",new_size)
 		img_pyr[level] = cv2.resize(img,new_size,interpolation=cv2.INTER_LINEAR)
 
 
@@ -65,10 +65,10 @@ def build_pyramid(img):
 	for level in range(MID+1,NUMCELLS+1):
 		diff = level - MID
 		new_size = (img.shape[0]*(ALPHA**diff), img.shape[1]*(ALPHA**diff))
-		print("level - ",level)
-		print("new size of image =",new_size)
+		# print("level - ",level)
+		# print("new size of image =",new_size)
 		new_size = (floor(new_size[0]),floor(new_size[1]));
-		print("new decim size of image = ",new_size)
+		# print("new decim size of image = ",new_size)
 		img_pyr[level] = np.zeros(new_size)
 
 	return img_pyr
@@ -112,18 +112,12 @@ def img2patches(img):
 		for c in range(STEP, wp-STEP):
 			pindex = pindex + 1
 			p = img[r-STEP:r+STEP+1, c-STEP: c+STEP+1]
-			#p = [pixel for row in p for pixel in row ]
 			p = np.reshape(p,(-1))
-			# patches_p.append(p)
-			# pi.append(r)
-			# pj.append(c)
+
 			patches_p = np.vstack([patches_p,p])
-			#print( "ROW and COL index = ",r,c)
 			pi = np.append(pi,r)
 			pj = np.append(pj,c)
-	#print(patches_p[0])
 	patches_p = np.delete(patches_p,0,0)
-	#print(patches_p[0])
 
 	return (patches_p,pi,pj)
 
@@ -201,7 +195,6 @@ def set_parent(curr_img, curr_pi, curr_pj, new_img,hr_example, factor,weighted_d
 	w_blur = W
 	if(checkbounds(h,w,pi,pj,step)):
 		#Rectangle to set
-		#print("\npi and pj ",pi,pj)
 		left = ceil(pj-step)
 		right = floor(pj+step)
 		top = ceil(pi-step)
@@ -212,12 +205,9 @@ def set_parent(curr_img, curr_pi, curr_pj, new_img,hr_example, factor,weighted_d
 		dist_getx = Xqt - pj; 
 		dist_gety = Yqt - pi;
 
-		#print("left to right ",list(range(left,right+1)))
 		coord_x = hr_example['pj'] + dist_getx
 		coord_y = hr_example['pi'] + dist_gety
 
-		# coord_x = [(hr_coord_x+i) for i in range(-2,3)]
-		# coord_y = [(hr_coord_y+i) for i in range(-2,3)]
 		(X,Y) = np.meshgrid(coord_x,coord_y)
 
 		X = X.astype(np.float32)
@@ -228,60 +218,21 @@ def set_parent(curr_img, curr_pi, curr_pj, new_img,hr_example, factor,weighted_d
 		weight = distance(lr_patch, lr_example)
 		weights = weight
 		sum_weights[top:bottom+1, left:right+1] = sum_weights[top:bottom+1, left:right+1] + weights
-		#print("patch shape = ",patch.shape)
-		#print("weights shape = ",weights)
-		#print(weighted_dists[top:bottom+1, left:right+1].shape)
 		weighted_dists[top:bottom+1, left:right+1] = weighted_dists[top:bottom+1, left:right+1] + patch * weights
 
 	return (weighted_dists,sum_weights,new_img)
 
-# def knnsearch(patches_db, input_patches_p,k):
+def unsharp_masking(image,ksize=(3,3), sigma=1.0, maskwt=5.0):
+	blurred_image = cv2.GaussianBlur(image, ksize, sigma)
 
-# 	NNs = []
-# 	Dist = []
-# 	for i in range(len(input_patches_p)):
-# 		patch = input_patches_p[i]
-# 		distances = np.linalg.norm(patches_db-patch, axis=1)
+	image = image.astype('int16')
+	blurred_image = blurred_image.astype('int16')
+	unsharp_mask = cv2.addWeighted(image, 1.0, blurred_image, -1.0, 0)
 
-# 		min_index = np.argpartition(distances,k)
-# 		min_index = min_index[:k]
-# 		NNs.append(min_index)
-# 		Dist.append(distances[min_index])
-# 	return np.array(NNs),np.array(Dist)
-
-# def kneareset_neighbour(patches_database, query_patches, k, distance_metric = 'euclidean'):
-    
-#     Dist = scipy.spatial.distance.cdist(patches_database, query_patches, distance_metric)
-#     k_idx = np.argpartition(Dist, range(k), axis=0)[:k, :]
-#     k_dist = Dist[np.argpartition(Dist, range(k), axis=0)[:k, :], np.arange(Dist.shape[1])[None, :]]
-
-#     return k_idx.T, k_dist.T
-
-# def knnsearch_cosine(patches_db, input_patches_p,k):
-
-#     NNs = []
-#     Dist = []
-#     for i in range(len(input_patches_p)):
-#         patch = input_patches_p[i]
-#         patchdb_norm = np.linalg.norm(patches_db, axis=1)
-#         dot = np.dot(patches_db,patch)
-#         temp = dot / patchdb_norm
-#         temp = temp / np.linalg.norm(patch)
-#         temp = 1-temp
-#         #print(temp)
-        
-        
-#         min_index = np.argpartition(temp,k)
-#         min_index = min_index[:k]
-#         NNs.append(min_index)
-#         Dist.append(temp[min_index])
-#     return NNs,Dist
-
-
-# def knnsearch_new(patches_db, input_patches,k):
-#     nbrs = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(patches_db)
-#     distances, indices = nbrs.kneighbors(input_patches)
-#     return indices, distances
+	#add the edge information to the image
+	sharp_image = cv2.addWeighted(image, 1.0, unsharp_mask, maskwt, 0)
+	#sharp_image = sharp_image-np.
+	return sharp_image
 
 def euclidean_distance(x,y):
     return sqrt(np.sum((x-y)**2))
