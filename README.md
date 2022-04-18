@@ -8,7 +8,7 @@ Programming Assignments, Project of IIT Delhi's course Digital Image Analysis CO
 
 * **Assignment2:** Mosaicing (Panorama Construction from Images). Image stitching and Blending.
 
-* **Assignment3:** 
+* **Assignment3:** Image Super-Resolution using Single Image
 
-* **Project :** 
+* **Project :** Image Retargeting and Video Retargeting using Graphcut
 
