@@ -235,8 +235,6 @@ def laplacianBlending(images, masks, n=5):
 
 def feathering(images, masks):
 
-    
-
     temp = images[0].shape
     H = temp[0]
     W = temp[1]
@@ -342,7 +340,7 @@ image_directory_path = sys.argv[1]
 # image_directory_path = "../data/{}".format(ex_no)
 
 transformation = "projective" # "affine" or "projective"                         
-blend_method = "pyramid" # "feathering" or "pyramid"
+blend_method = "feathering" # "feathering" or "pyramid"
 
 
 image_names = os.listdir(image_directory_path)
