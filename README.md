@@ -1,6 +1,6 @@
 # Digital Image Analysis COL783
 
-Programming Assignments, Project of IIT Delhi's course Digital Image Analysis COL783 offered in 2022 Spring.
+Programming Assignments, Project of IIT Delhi's course Digital Image Analysis COL783 offered in 2022 Spring by Prof. Chetan Arora.
 
 ## Implemented various concepts of Digital Image Analysis.
 
